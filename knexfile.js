@@ -2,11 +2,11 @@
 module.exports = {
     test: {
         client: 'pg',
-        version: '9.6',
+        version: '11',
         connection: {
             host: 'localhost',
             user: 'postgres',
-            password: 'test123',
+            password: 'abcd@1234',
             database: 'barriga'
         },
         migrations: {

@@ -1,22 +1,44 @@
-const app = require('express')()
-const consign = require('consign')
+const app = require("express")();
+const consign = require("consign");
 
-const knex = require('knex')
-const knexfile = require('../knexfile')
-const knexlogger = require('knex-logger')
+const knex = require("knex");
+const knexfile = require("../knexfile");
 
-app.db = knex(knexfile.test)
-app.use(knexlogger(app.db))
 
-consign({ cwd: 'src', verbose: false })
-    .include('./config/middleware.js')
-    .then('./services')
-    .then('./routes')
-    .then('./config/routes.js')
-    .into(app)
-app.get('/', (req, res) => {
-    res.status(200).send()
+app.db = knex(knexfile.test);
+
+app.get('/users', (req, res, next) => {
+  console.log('passei aqui')
+  next()
 })
+
+consign({ cwd: "src", verbose: false })
+  .include("./config/middleware.js")
+  .then("./services")
+  .then("./routes")
+  .then("./config/routes.js")
+  .into(app);
+app.get("/", (req, res) => {
+  res.status(200).send();
+});
+
+app.get("/user", (req, res) => {
+  const users = [{ name: "Jhon Doe", mail: "jhon@mail.com" }];
+  res.status(200).json(users)
+});
+
+app.use((err, req, res, next) => {
+  const { name, message, stack } = err
+  if (name === 'ValidationError') res.status(400).json({ error: message })
+  else res.status(500).json({ name, message, stack })
+  next(err)
+})
+
+// MIDDLEWARE DE TRATAMENTO UNIVERSAL PARA ROTAS NÃO ENCONTRADAS PELO ROUTER
+//app.use((req, res) => {
+//  res.status(404).send('Não conheço essa requisição')
+//})
+
 // ALTERNATIVA PARA LOGGER DE ACESSO AO BANCO
 // app.db.on('query', (query) => {
 //     // eslint-disable-next-line no-console
@@ -28,4 +50,4 @@ app.get('/', (req, res) => {
 //     // eslint-disable-next-line no-console
 //     console.log(error))
 // eslint-disable-next-line no-undef
-module.exports = app
+module.exports = app;
