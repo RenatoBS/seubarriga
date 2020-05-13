@@ -1,11 +1,14 @@
 const jwt = require('jwt-simple')
 const bcrypt = require('bcrypt-nodejs')
 const ValidationError = require('../errors/validationError')
+const express = require('express')
 
 const secret = 'Segredo!'
 
 module.exports = (app) => {
-    const signin = (req, res, next) => {
+    const router = express.Router()
+
+    router.post('/signin', (req, res, next) => {
         app.services.user.findOne({ mail: req.body.mail })
             .then(user => {
                 if (!user) throw new ValidationError('Usuario ou senha errado')
@@ -20,7 +23,16 @@ module.exports = (app) => {
                 }
                 else throw new ValidationError('Usuario ou senha errado')
             }).catch(err => next(err))
-    }
+    })
 
-    return { signin }
+    router.post('/signup', async (req, res, next) => {
+        try {
+            const result = await app.services.user.save(req.body)
+            return res.status(201).json(result[0])
+        } catch (err) {
+            next(err)
+        }
+    })
+    
+    return router
 }

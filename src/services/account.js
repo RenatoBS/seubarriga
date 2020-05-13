@@ -1,17 +1,21 @@
 const ValidationError = require('../errors/validationError')
 
 module.exports = (app) => {
-    const save = async (account) => {
-        if (!account.name) throw new ValidationError('Nome é um atributo obrigadorio')
-        return app.db('accounts').insert(account, '*')
-    }
-
-    const findAll = () => {
-        return app.db('accounts').select()
+    const findAll = (userId) => {
+        return app.db('accounts').select().where({ user_id: userId })
     }
 
     const find = (filter = {}) => {
         return app.db('accounts').where(filter).first()
+    }
+
+    const save = async (account) => {
+        if (!account.name) throw new ValidationError('Nome é um atributo obrigadorio')
+
+        const accDb = await find({ name: account.name, user_id: account.user_id })
+        if (accDb) throw new ValidationError('Já existe uma conta com esse nome')
+
+        return app.db('accounts').insert(account, '*')
     }
 
     const update = (id, account) => {
