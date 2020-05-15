@@ -7,10 +7,10 @@ const knexfile = require("../knexfile");
 
 app.db = knex(knexfile.test);
 
-app.get('/users', (req, res, next) => {
-  console.log('passei aqui')
-  next()
-})
+// app.get('/users', (req, res, next) => {
+//   console.log('passei aqui')
+//   next()
+// })
 
 consign({ cwd: "src", verbose: false })
   .include("./config/passport.js")
