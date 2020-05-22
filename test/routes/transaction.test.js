@@ -9,9 +9,14 @@ let accUser1;
 let accUser2;
 
 beforeAll(async () => {
+//    await app.db.migrate.rollback()
+//    await app.db.migrate.latest()
     await app.db('transactions').del();
+    await app.db('transfers').del();
     await app.db('accounts').del();
     await app.db('users').del();
+
+
     const users = await app.db('users').insert([
         { name: 'User #1', mail: 'user1@mail.com', password: '$2a$10$avrBKSuZNaJhXVek03biV.oWrqOL8ezmeeh0XwUg.f5S7c/zadUjW' },
         { name: 'User #2', mail: 'user2@mail.com', password: '$2a$10$avrBKSuZNaJhXVek03biV.oWrqOL8ezmeeh0XwUg.f5S7c/zadUjW' }

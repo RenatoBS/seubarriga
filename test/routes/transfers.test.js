@@ -6,8 +6,8 @@ const MAIN_ROUTE = '/v1/transfers'
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAwMDAsIm5hbWUiOiJVc2VyICMxIiwibWFpbCI6InVzZXIxQG1haWwuY29tIn0.QMgvo_lPe0Rdxpx7cay_hIkDAbjCK_--VD2fP0NTTqk'
 
 beforeAll(async () => {
-    //await app.db.migrate.rollback()
-    //await app.db.migrate.latest()
+    await app.db.migrate.rollback()
+    await app.db.migrate.latest()
     await app.db.seed.run()
 })
 
@@ -91,6 +91,11 @@ describe('Ao salvar uma tranferencia valida...', () => {
     test('Ambas devem referenciar a transferencia que a originou', () => {
         expect(income.transfer_id).toBe(transferId)
         expect(outcome.transfer_id).toBe(transferId)
+    })
+
+    test('Ambas devem estar com o status de realizada', () => {
+        expect(income.status).toBe(true)
+        expect(outcome.status).toBe(true)
     })
 })
 
@@ -248,24 +253,24 @@ describe('Ao remover uma tranferencia', () => {
             })
     })
     test('O registro deve ser apagado do banco', () => {
-        return app.db('transfers').where({id: '10000'})
-        .then(result => {
-            expect(result).toHaveLength(0)
-        })
+        return app.db('transfers').where({ id: '10000' })
+            .then(result => {
+                expect(result).toHaveLength(0)
+            })
     })
     test('As transações assoiadas devem ter sido removidas', () => {
-        return app.db('transactions').where({transfer_id: '10000'})
-        .then(result => {
-            expect(result).toHaveLength(0)
-        })
+        return app.db('transactions').where({ transfer_id: '10000' })
+            .then(result => {
+                expect(result).toHaveLength(0)
+            })
     })
 })
 
-test.only('Não deve retornar transferencia de outro usuario', () => {
+test('Não deve retornar transferencia de outro usuario', () => {
     return request(app).get(`${MAIN_ROUTE}/10001`)
-    .set('authorization', `bearer ${token}`)
-    .then(res => {
-        expect(res.status).toBe(403)
-        expect(res.body.error).toBe('Esse recurso não pertence ao usuario')
-    })
+        .set('authorization', `bearer ${token}`)
+        .then(res => {
+            expect(res.status).toBe(403)
+            expect(res.body.error).toBe('Esse recurso não pertence ao usuario')
+        })
 })

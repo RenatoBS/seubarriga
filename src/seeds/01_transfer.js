@@ -1,6 +1,6 @@
+const moment = require('moment')
 
-exports.seed = function (knex) {
-  // Deletes ALL existing entries
+exports.seed = (knex) => {
   return knex('transactions').del()
     .then(() => knex('transfers').del())
     .then(() => knex('accounts').del())
@@ -20,9 +20,9 @@ exports.seed = function (knex) {
       { id: 10001, descriptions: 'transfer #2', user_id: 10001, acc_ori_id: 10001, acc_dest_id: 10003, amount: 100, date: new Date() },
     ]))
     .then(() => knex('transactions').insert([
-      { description: 'Transfer from AccO #1', date: new Date(), amount: 100, type: 'I', acc_id: 10001, transfer_id: 10000 },
-      { description: 'Transfer from AccD #1', date: new Date(), amount: -100, type: 'O', acc_id: 10000, transfer_id: 10000 },
-      { description: 'Transfer from AccO #2', date: new Date(), amount: 100, type: 'I', acc_id: 10003, transfer_id: 10001 },
-      { description: 'Transfer from AccD #2', date: new Date(), amount: -100, type: 'O', acc_id: 10002, transfer_id: 10001 },
-    ]))
+      { description: 'Transfer from AccO #1', date: moment(), amount: 100, type: 'I', acc_id: 10001, transfer_id: 10000 },
+      { description: 'Transfer from AccD #1', date: moment(), amount: -100, type: 'O', acc_id: 10000, transfer_id: 10000},
+      { description: 'Transfer from AccO #2', date: moment(), amount: 100, type: 'I', acc_id: 10003, transfer_id: 10001 },
+      { description: 'Transfer from AccD #2', date: moment(), amount: -100, type: 'O', acc_id: 10002, transfer_id: 10001 },
+    ]));
 }
